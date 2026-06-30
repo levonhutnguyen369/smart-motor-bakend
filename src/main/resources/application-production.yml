@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://ep-old-fire-admzfd60-pooler.c-2.us-east-1.aws.neon.tech:5432/iotdb?sslmode=require&channel_binding=require
+    username: neondb_owner
+    password: npg_ZVotDs79WeYM
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+
+
+logging:
+  level:
+    org.springframework.integration.mqtt: INFO
+    org.eclipse.paho.client.mqttv3: INFO

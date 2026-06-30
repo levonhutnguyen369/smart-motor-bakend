@@ -1,21 +1,8 @@
 spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
-    username: postgres
-    password: postgres
-
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-
+  profiles:
+    active: production
 mqtt:
   broker: tcp://test.mosquitto.org:1883
   client-id: spring-tracker
   telemetry-topic: bike/telemetry
   alert-topic: bike/alert
-
-logging:
-  level:
-    org.springframework.integration.mqtt: DEBUG
-    org.eclipse.paho.client.mqttv3: DEBUG
