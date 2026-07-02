@@ -59,8 +59,8 @@ public class MqttConfig {
                 new MqttPahoMessageDrivenChannelAdapter(
                         clientId,
                         mqttClientFactory(),
-                        "bike/telemetry",
-                        "bike/alert",
+                        "bike/telemetry/+",
+                        "bike/alert/+",
                         "bike/battery/+",
                         "bike/balance/response/+"
                 );

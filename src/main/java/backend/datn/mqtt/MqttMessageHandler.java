@@ -1,8 +1,10 @@
 package backend.datn.mqtt;
 
 import backend.datn.dto.AlertPayload;
+import backend.datn.dto.BatteryPayload;
 import backend.datn.dto.TelemetryPayload;
 import backend.datn.entity.Device;
+import backend.datn.entity.Status;
 import backend.datn.repository.DeviceRepository;
 import backend.datn.service.AlertService;
 import backend.datn.service.TelemetryService;
@@ -11,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
 
 
 @Component
@@ -55,7 +59,8 @@ public class MqttMessageHandler {
         System.out.println("RECEIVED MQTT");
         System.out.println(payload);
 
-        if(topic.equals("bike/telemetry"))
+        assert topic != null;
+        if(topic.startsWith("bike/telemetry/"))
         {
             TelemetryPayload dto =
                     mapper.readValue(
@@ -67,7 +72,13 @@ public class MqttMessageHandler {
                 deviceRepository.save(
                         backend.datn.entity.Device.builder()
                                 .deviceId(dto.getDeviceId())
-                                .name("Device " + dto.getDeviceId())
+                                .name("ESP32 " + dto.getDeviceId())
+                                .batteryVoltage(0.0)
+                                .batteryPercent(0)
+                                .antiTheftEnabled(false)
+                                .status(Status.INACTIVE) // hoặc Status.INACTIVE tùy enum của bạn
+                                .lastSeen(LocalDateTime.now())
+                                .user(null)
                                 .build()
                 );
             }
@@ -79,7 +90,7 @@ public class MqttMessageHandler {
             );
         }
 
-        if(topic.equals("bike/alert"))
+        if(topic.startsWith("bike/alert/"))
         {
             AlertPayload dto =
                     mapper.readValue(
@@ -94,24 +105,37 @@ public class MqttMessageHandler {
                     dto.getLng()
             );
         }
-        if (topic.equals("bike/battery/bike001")) {
-            Device device = deviceRepository.findByDeviceId("bike001").orElse(null);
-            if (device != null) {
-                String[] parts = payload.split(",");
-                if (parts.length <= 7) {
-                    try {
-                        double batteryVoltage = Double.parseDouble(parts[0]);
-                        int batteryPercent = Integer.parseInt(parts[1]);
-                        device.setBatteryVoltage(batteryVoltage);
-                        device.setBatteryPercent(batteryPercent);
-                        deviceRepository.save(device);
-                        System.out.println("Updated battery info for device bike001: " + batteryVoltage + "V, " + batteryPercent + "%");
-                    } catch (NumberFormatException e) {
-                        System.out.println("Invalid battery data format: " + payload);
-                    }
+        if (topic.startsWith("bike/battery/")) {
+
+            String deviceId = topic.substring("bike/battery/".length());
+
+            Device device = deviceRepository.findByDeviceId(deviceId).orElse(null);
+
+            if (device == null) {
+                System.out.println("Device not found: " + deviceId);
+                return;
+            }
+
+            String[] parts = payload.split(",");
+
+            BatteryPayload dto =
+                    mapper.readValue(
+                            payload,
+                            BatteryPayload.class
+                    );
+
+            if (dto != null) {
+                try {
+                    device.setBatteryVoltage(dto.getVoltage());
+                    device.setBatteryPercent(dto.getPercent());
+
+                    deviceRepository.save(device);
+
+                    System.out.println("Updated battery for " + deviceId);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            } else {
-                System.out.println("Device not found");
             }
         }
 
@@ -119,13 +143,23 @@ public class MqttMessageHandler {
             System.out.println("MATCH");
         }
 
-        if (topic.equals("bike/balance/response/bike001")) {
-            Device device = deviceRepository.findByDeviceId("bike001").orElse(null);
-            if (device != null) {
-                mqttPublisherService.publish("app/balance/response/bike001",  payload);
-            } else {
-                System.out.println("Device not found");
+        if (topic.startsWith("bike/balance/response/")) {
+
+            String deviceId =
+                    topic.substring("bike/balance/response/".length());
+
+            Device device =
+                    deviceRepository.findByDeviceId(deviceId).orElse(null);
+
+            if (device == null) {
+                System.out.println("Device not found: " + deviceId);
+                return;
             }
+
+            mqttPublisherService.publish(
+                    "app/balance/response/" + deviceId,
+                    payload
+            );
         }
 
 
