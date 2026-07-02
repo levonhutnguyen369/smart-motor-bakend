@@ -26,6 +26,8 @@ public class Alert {
 
     private Double latitude;
 
+    private String status;
+
     private Double longitude;
 
     private LocalDateTime createdAt;

@@ -4,7 +4,7 @@ package backend.datn.controller;
 import backend.datn.dto.ApiResponse;
 import backend.datn.entity.Device;
 import backend.datn.service.DeviceService;
-import backend.datn.service.DeviceServiceImpl;
+import backend.datn.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +15,30 @@ import org.springframework.web.bind.annotation.*;
 public class DeviceController {
 
     private final DeviceService deviceService;
+    private final JwtService jwtService;
+
+    @PostMapping("/link")
+    public ResponseEntity<ApiResponse<?>> linkDevice(
+            @RequestHeader("Authorization") String bearerToken,
+            @RequestParam String deviceId)
+    {
+
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            bearerToken = bearerToken.substring(7); // Chỉ lấy chuỗi token đứng sau
+        }
+        Long userId = jwtService.getUserIdFromToken(bearerToken);
+        boolean linkDevice = deviceService.linkDeviceToAccount(userId, deviceId);
+        ApiResponse<?> response = new ApiResponse<>();
+        if (linkDevice) {
+            response.setSuccess(true);
+            response.setMessage("Device linked successfully");
+            return ResponseEntity.ok(response);
+        } else {
+            response.setSuccess(false);
+            response.setMessage("Failed to link device");
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
 
     @GetMapping("/{deviceId}")
     public Device getDeviceById(@PathVariable String deviceId) {

@@ -33,8 +33,17 @@ public class User implements UserDetails {
 
     private String phone;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Device device;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    @Column(name = "status")
+    private Status status;
+
+    @Column(name = "otp_code")
+    private String otpCode;
 
     @PrePersist
     protected void onCreate() {

@@ -1,5 +1,6 @@
 package backend.datn.service;
 
+import backend.datn.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -14,16 +15,17 @@ import java.util.function.Function;
 @Service
 public class JwtService {
     // Khóa bí mật (Nên để trong file application.properties)
-    private static final String SECRET_KEY = "YourSuperSecretKeyForJwtGenerationShouldBeLongEnough";
+    private static final String SECRET_KEY = "29IJa8FMLNpMerMGlUxw/kc/VBcPZhruxzPWHhaAzTo=";
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
-    public String generateToken(UserDetails userDetails) {
+    public String generateToken(User user) {
         return Jwts.builder()
-                .setSubject(userDetails.getUsername())
+                .setSubject(user.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
+                .claim("userId", user.getId())
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24)) // 24 giờ
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
@@ -50,5 +52,21 @@ public class JwtService {
     private Key getSignInKey() {
         byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
         return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    public Long getUserIdFromToken(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(getSignInKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        Object userIdObj = claims.get("userId");
+
+        if (userIdObj != null) {
+            return Long.valueOf(userIdObj.toString());
+        }
+
+        return null;
     }
 }

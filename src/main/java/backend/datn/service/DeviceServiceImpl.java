@@ -3,7 +3,9 @@ package backend.datn.service;
 
 import backend.datn.entity.Alert;
 import backend.datn.entity.Device;
+import backend.datn.entity.User;
 import backend.datn.repository.DeviceRepository;
+import backend.datn.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -17,6 +19,7 @@ import java.util.Optional;
 public class DeviceServiceImpl implements DeviceService {
     private final DeviceRepository deviceRepository;
     private final MqttClient mqttClient;
+    private final UserRepository userRepository;
 
     public Device getByDeviceId(String id) {
         Optional<Device> device = deviceRepository.findByDeviceId(id);
@@ -44,6 +47,20 @@ public class DeviceServiceImpl implements DeviceService {
         } catch (MqttException e) {
             throw new RuntimeException("Failed to publish MQTT message", e);
         }
+    }
+
+    @Override
+    public boolean linkDeviceToAccount(Long userId, String deviceId) {
+        Optional<Device> existingDevice = deviceRepository.findByDeviceId(deviceId);
+        Optional<User> existingUser = userRepository.findById(userId);
+
+        if (existingDevice.isPresent() && existingUser.isPresent()) {
+            Device device = existingDevice.get();
+            device.setUser(existingUser.get());
+            deviceRepository.save(device);
+            return true;
+        }
+        return false;
     }
 
 }

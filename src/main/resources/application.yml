@@ -1,6 +1,20 @@
 spring:
   profiles:
     active: production
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: nguyenminhdev7@gmail.com
+    password: vndcsohccduamdmd # <-- LƯU Ý ĐỌC KỸ MỤC 1 BÊN DƯỚI
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true # Nên thêm dòng này cho Gmail
+
 mqtt:
   broker: tcp://test.mosquitto.org:1883
   client-id: spring-tracker
