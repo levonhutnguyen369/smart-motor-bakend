@@ -17,6 +17,6 @@ spring:
 
 mqtt:
   broker: tcp://test.mosquitto.org:1883
-  client-id: spring-tracker
+  client-id: spring-tracker-${random.uuid}
   telemetry-topic: bike/telemetry
   alert-topic: bike/alert
