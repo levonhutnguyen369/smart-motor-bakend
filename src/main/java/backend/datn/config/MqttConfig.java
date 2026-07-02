@@ -1,8 +1,6 @@
 package backend.datn.config;
 
-import org.eclipse.paho.client.mqttv3.MqttClient;
-import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
-import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -85,6 +83,20 @@ public class MqttConfig {
         options.setCleanSession(true);
 
         client.connect(options);
+
+        client.setCallback(new MqttCallback() {
+            @Override
+            public void connectionLost(Throwable cause) {
+                System.out.println("MQTT LOST");
+                cause.printStackTrace();
+            }
+
+            @Override
+            public void messageArrived(String topic, MqttMessage message) {}
+
+            @Override
+            public void deliveryComplete(IMqttDeliveryToken token) {}
+        });
 
         return client;
     }
