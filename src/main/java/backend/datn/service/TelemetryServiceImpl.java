@@ -63,4 +63,32 @@ public class TelemetryServiceImpl implements TelemetryService {
                 ? null
                 : list.get(0);
     }
+
+    @Override
+    public List<Telemetry> tripHistory(
+            Long userId,
+            String startTime,
+            String endTime
+    ) {
+        Device device = deviceService.getByUserId(userId);
+
+        if (startTime == null || endTime == null) {
+            return repository.findByDeviceIdOrderByCreatedAtDesc(
+                    device.getDeviceId()
+            );
+        }
+
+        LocalDateTime start =
+                LocalDateTime.parse(startTime);
+
+        LocalDateTime end =
+                LocalDateTime.parse(endTime);
+
+        return repository
+                .findByDeviceIdAndCreatedAtBetweenOrderByCreatedAtAsc(
+                        device.getDeviceId(),
+                        start,
+                        end
+                );
+    }
 }

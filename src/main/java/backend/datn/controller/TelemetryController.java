@@ -45,4 +45,19 @@ public class TelemetryController {
                 userId
         );
     }
+
+    @GetMapping("/trip-history")
+    public List<Telemetry> tripHistory(
+            @RequestHeader("Authorization") String bearerToken,
+            @RequestParam(required = false) String startTime,
+            @RequestParam(required = false) String endTime
+    ) {
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            bearerToken = bearerToken.substring(7); // Chỉ lấy chuỗi token đứng sau
+        }
+        Long userId = jwtService.getUserIdFromToken(bearerToken);
+        return service.tripHistory(
+                userId, startTime, endTime
+        );
+    }
 }

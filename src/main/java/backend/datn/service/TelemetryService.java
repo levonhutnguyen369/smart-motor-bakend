@@ -20,4 +20,8 @@ public interface TelemetryService {
     Telemetry latest(
             Long userId
     );
+
+    List<Telemetry> tripHistory(
+            Long userId, String startTime, String endTime
+    );
 }
