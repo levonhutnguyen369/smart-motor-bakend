@@ -2,6 +2,7 @@ package backend.datn.controller;
 
 
 import backend.datn.dto.ApiResponse;
+import backend.datn.dto.UpdatePhoneCallRequest;
 import backend.datn.entity.Device;
 import backend.datn.entity.User;
 import backend.datn.service.DeviceService;
@@ -59,6 +60,23 @@ public class DeviceController {
         }
         Long userId = jwtService.getUserIdFromToken(bearerToken);
         String result = deviceService.sendDeviceCommand(userId, command);
+
+        ApiResponse<String> response = new ApiResponse<>();
+        response.setSuccess(true);
+        response.setMessage("Command sent successfully");
+        response.setData(result);
+
+        return ResponseEntity.ok(response);
+    }
+    @PostMapping("/command/update-phone-call")
+    public ResponseEntity<ApiResponse<String>> sendDeviceCommandToUpdatePhoneCall(
+            @RequestHeader("Authorization") String bearerToken,
+            @RequestBody UpdatePhoneCallRequest request) {
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            bearerToken = bearerToken.substring(7); // Chỉ lấy chuỗi token đứng sau
+        }
+        Long userId = jwtService.getUserIdFromToken(bearerToken);
+        String result = deviceService.sendDeviceCommandToUpdatePhoneCall(userId, request);
 
         ApiResponse<String> response = new ApiResponse<>();
         response.setSuccess(true);
