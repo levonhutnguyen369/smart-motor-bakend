@@ -2,18 +2,33 @@ spring:
   profiles:
     active: production
 
+#  mail:
+#    host: smtp.gmail.com
+#    port: 587
+#    username: nguyenminhdev7@gmail.com
+#    password: vndcsohccduamdmd # <-- LƯU Ý ĐỌC KỸ MỤC 1 BÊN DƯỚI
+#    properties:
+#      mail:
+#        smtp:
+#          auth: true
+#          starttls:
+#            enable: true
+#            required: true # Nên thêm dòng này cho Gmail
   mail:
-    host: smtp.gmail.com
-    port: 587
-    username: nguyenminhdev7@gmail.com
-    password: vndcsohccduamdmd # <-- LƯU Ý ĐỌC KỸ MỤC 1 BÊN DƯỚI
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
     properties:
       mail:
         smtp:
           auth: true
           starttls:
             enable: true
-            required: true # Nên thêm dòng này cho Gmail
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
 
 mqtt:
   broker: tcp://test.mosquitto.org:1883
