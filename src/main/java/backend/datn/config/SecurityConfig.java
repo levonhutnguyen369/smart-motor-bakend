@@ -24,7 +24,8 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll() // Cho phép đăng nhập/đăng ký
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/ping/**").permitAll()
                         .anyRequest().authenticated() // Còn lại phải có Token
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
