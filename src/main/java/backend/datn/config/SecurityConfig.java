@@ -25,7 +25,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll() // Cho phép đăng nhập/đăng ký
-                        .anyRequest().permitAll() // Còn lại phải có Token
+                        .anyRequest().authenticated() // Còn lại phải có Token
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider) // Lấy từ ApplicationConfig
