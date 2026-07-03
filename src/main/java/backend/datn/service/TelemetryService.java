@@ -14,10 +14,10 @@ public interface TelemetryService {
     );
 
     List<Telemetry> findByDevice(
-            String deviceId
+            Long userId
     );
 
     Telemetry latest(
-            String deviceId
+            Long userId
     );
 }

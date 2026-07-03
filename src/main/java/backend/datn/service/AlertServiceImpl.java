@@ -2,6 +2,7 @@ package backend.datn.service;
 
 
 import backend.datn.entity.Alert;
+import backend.datn.entity.Device;
 import backend.datn.repository.AlertRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import java.util.List;
 public class AlertServiceImpl implements AlertService {
 
     private final AlertRepository repository;
+    private final DeviceService deviceService;
 
     @Override
     public Alert save(
@@ -41,7 +43,8 @@ public class AlertServiceImpl implements AlertService {
     }
 
     @Override
-    public List<Alert> getByDeviceId(String id) {
-        return repository.findAlertByDeviceId(id);
+    public List<Alert> getByUserId(Long id) {
+        Device device = deviceService.getByUserId(id);
+        return repository.findAlertByDeviceId(device.getDeviceId());
     }
 }

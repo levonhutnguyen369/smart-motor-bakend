@@ -15,5 +15,5 @@ public interface AlertService {
 
     List<Alert> getAll();
 
-    List<Alert> getByDeviceId(String id);
+    List<Alert> getByUserId(Long id);
 }

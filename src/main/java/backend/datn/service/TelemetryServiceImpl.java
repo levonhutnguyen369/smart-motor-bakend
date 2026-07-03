@@ -1,8 +1,12 @@
 package backend.datn.service;
 
 
+import backend.datn.entity.Device;
+import backend.datn.entity.User;
+import backend.datn.repository.DeviceRepository;
 import backend.datn.repository.TelemetryRepository;
 import backend.datn.entity.Telemetry;
+import backend.datn.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +18,7 @@ import java.util.List;
 public class TelemetryServiceImpl implements TelemetryService {
 
     private final TelemetryRepository repository;
+    private final DeviceService deviceService;
 
     @Override
     public Telemetry save(
@@ -35,21 +40,23 @@ public class TelemetryServiceImpl implements TelemetryService {
 
     @Override
     public List<Telemetry> findByDevice(
-            String deviceId
+            Long userId
     ) {
+        Device device = deviceService.getByUserId(userId);
         return repository
                 .findByDeviceIdOrderByCreatedAtDesc(
-                        deviceId
+                        device.getDeviceId()
                 );
     }
 
     @Override
     public Telemetry latest(
-            String deviceId
+            Long userId
     ) {
+        Device device = deviceService.getByUserId(userId);
         List<Telemetry> list =
                 repository.findByDeviceIdOrderByCreatedAtDesc(
-                        deviceId
+                        device.getDeviceId()
                 );
 
         return list.isEmpty()

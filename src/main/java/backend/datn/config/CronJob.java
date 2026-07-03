@@ -12,7 +12,7 @@ public class CronJob {
     public void keepServerAwake() {
         try {
             RestTemplate restTemplate = new RestTemplate();
-            String url = "https://smart-motor-bakend-1.onrender.com";
+            String url = "https://smart-motor.onrender.com";
             String response = restTemplate.getForObject(url, String.class);
             System.out.println("Self-ping success: " + response);
         } catch (Exception e) {

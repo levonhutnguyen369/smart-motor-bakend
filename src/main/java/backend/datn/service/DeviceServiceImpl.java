@@ -21,8 +21,12 @@ public class DeviceServiceImpl implements DeviceService {
     private final MqttClient mqttClient;
     private final UserRepository userRepository;
 
-    public Device getByDeviceId(String id) {
-        Optional<Device> device = deviceRepository.findByDeviceId(id);
+    @Override
+    public Device getByUserId(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+        String deviceId = user.getDevice().getDeviceId();
+        Optional<Device> device = deviceRepository.findByDeviceId(deviceId);
         if (device.isPresent()) {
             return device.get();
         } else {
@@ -35,7 +39,8 @@ public class DeviceServiceImpl implements DeviceService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
         String deviceId = user.getDevice().getDeviceId();
-        Device device = getByDeviceId(deviceId);
+        Device device = deviceRepository.findByDeviceId(deviceId)
+                .orElseThrow(() -> new RuntimeException("Device not found with id: " + deviceId));
         if (device == null) {
             throw new RuntimeException("Device not found with id: " + deviceId);
         }

@@ -1,5 +1,6 @@
 package backend.datn.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -38,5 +39,6 @@ public class Device {
 
     @OneToOne
     @JoinColumn(name = "user_id", unique = true)
+    @JsonManagedReference
     private User user;
 }

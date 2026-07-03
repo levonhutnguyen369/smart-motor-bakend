@@ -41,16 +41,23 @@ public class DeviceController {
         }
     }
 
-    @GetMapping("/{deviceId}")
-    public Device getDeviceById(@PathVariable String deviceId) {
-        return deviceService.getByDeviceId(deviceId);
+    @GetMapping("")
+    public Device getDeviceById(@RequestHeader("Authorization") String bearerToken) {
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            bearerToken = bearerToken.substring(7); // Chỉ lấy chuỗi token đứng sau
+        }
+        Long userId = jwtService.getUserIdFromToken(bearerToken);
+        return deviceService.getByUserId(userId);
     }
 
     @PostMapping("/command")
     public ResponseEntity<ApiResponse<String>> sendDeviceCommand(
-            @RequestHeader("Authorization") String token,
+            @RequestHeader("Authorization") String bearerToken,
             @RequestBody String command) {
-        Long userId = jwtService.getUserIdFromToken(token);
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            bearerToken = bearerToken.substring(7); // Chỉ lấy chuỗi token đứng sau
+        }
+        Long userId = jwtService.getUserIdFromToken(bearerToken);
         String result = deviceService.sendDeviceCommand(userId, command);
 
         ApiResponse<String> response = new ApiResponse<>();
