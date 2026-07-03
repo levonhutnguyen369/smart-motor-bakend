@@ -35,6 +35,10 @@ public class User implements UserDetails {
 
     private String phone;
 
+    private String lincensePlate;
+
+    private String nameVehicle;
+
     @JsonBackReference
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Device device;
