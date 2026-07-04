@@ -1,11 +1,13 @@
 package backend.datn.controller;
 
+import backend.datn.dto.ApiResponse;
 import backend.datn.entity.Telemetry;
 import backend.datn.entity.User;
 import backend.datn.service.DeviceService;
 import backend.datn.service.JwtService;
 import backend.datn.service.TelemetryService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -47,7 +49,7 @@ public class TelemetryController {
     }
 
     @GetMapping("/trip-history")
-    public List<Telemetry> tripHistory(
+    public ResponseEntity<ApiResponse<List<Telemetry>>> tripHistory(
             @RequestHeader("Authorization") String bearerToken,
             @RequestParam(required = false) String startTime,
             @RequestParam(required = false) String endTime
@@ -56,8 +58,12 @@ public class TelemetryController {
             bearerToken = bearerToken.substring(7); // Chỉ lấy chuỗi token đứng sau
         }
         Long userId = jwtService.getUserIdFromToken(bearerToken);
-        return service.tripHistory(
-                userId, startTime, endTime
+        return ResponseEntity.ok(
+                new ApiResponse<>(
+                        true,
+                        "Trip history retrieved successfully",
+                        service.tripHistory(userId, startTime, endTime)
+                )
         );
     }
 }
