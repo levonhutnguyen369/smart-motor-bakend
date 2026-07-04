@@ -2,6 +2,7 @@ package backend.datn.mqtt;
 
 import backend.datn.dto.AlertPayload;
 import backend.datn.dto.BatteryPayload;
+import backend.datn.dto.SimBalanceResponse;
 import backend.datn.dto.TelemetryPayload;
 import backend.datn.entity.Device;
 import backend.datn.entity.Status;
@@ -9,14 +10,16 @@ import backend.datn.repository.DeviceRepository;
 import backend.datn.service.AlertService;
 import backend.datn.service.TelemetryService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.messaging.Message;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
-
+@Slf4j
 @Component
 public class MqttMessageHandler {
 
@@ -26,7 +29,9 @@ public class MqttMessageHandler {
 
     private final AlertService alertService;
 
-    private final MqttPublisherService mqttPublisherService;
+    private final ObjectMapper objectMapper = new ObjectMapper();
+    // import cai log vo nua
+    private final SimpMessagingTemplate messagingTemplate;
 
     @Autowired
     private DeviceRepository deviceRepository;
@@ -34,9 +39,9 @@ public class MqttMessageHandler {
     public MqttMessageHandler(
             ObjectMapper mapper,
             TelemetryService telemetryService,
-            AlertService alertService, MqttPublisherService mqttPublisherService)
+            AlertService alertService, MqttPublisherService mqttPublisherService, SimpMessagingTemplate messagingTemplate)
     {
-        this.mqttPublisherService = mqttPublisherService;
+        this.messagingTemplate = messagingTemplate;
         System.out.println("MqttMessageHandler CREATED");
 
         this.mapper = mapper;
@@ -145,21 +150,25 @@ public class MqttMessageHandler {
 
         if (topic.startsWith("bike/balance/response/")) {
 
-            String deviceId =
-                    topic.substring("bike/balance/response/".length());
+            String deviceId = topic.substring("bike/balance/response/".length()).trim();
 
-            Device device =
-                    deviceRepository.findByDeviceId(deviceId).orElse(null);
+            Device device = deviceRepository.findByDeviceId(deviceId)
+                    .orElse(null);
 
             if (device == null) {
-                System.out.println("Device not found: " + deviceId);
+                log.warn("Device not found: {}", deviceId);
                 return;
             }
 
-            mqttPublisherService.publish(
-                    "app/balance/response/" + deviceId,
-                    payload
+            SimBalanceResponse response =
+                    objectMapper.readValue(payload, SimBalanceResponse.class);
+
+            messagingTemplate.convertAndSend(
+                    "/topic/balance/" + deviceId,
+                    response
             );
+
+            log.info("Balance response sent to WebSocket: {}", deviceId);
         }
 
 
