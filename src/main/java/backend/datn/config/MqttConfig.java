@@ -101,16 +101,16 @@ public class MqttConfig {
         return client;
     }
 
-    @Bean
-    @ServiceActivator(inputChannel = "mqttInputChannel")
-    public MessageHandler mqttHandler() {
-
-        return message -> {
-
-            System.out.println("=================================");
-            System.out.println("MQTT RECEIVED");
-            System.out.println(message.getPayload());
-            System.out.println("=================================");
-        };
-    }
+//    @Bean
+//    @ServiceActivator(inputChannel = "mqttInputChannel")
+//    public MessageHandler mqttHandler() {
+//
+//        return message -> {
+//
+//            System.out.println("=================================");
+//            System.out.println("MQTT RECEIVED");
+//            System.out.println(message.getPayload());
+//            System.out.println("=================================");
+//        };
+//    }
 }
