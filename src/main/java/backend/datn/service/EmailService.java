@@ -1,16 +1,28 @@
 package backend.datn.service;
 
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-
+@Configuration
 public class EmailService {
     private final JavaMailSender mailSender;
+
+    @Value("${MAIL_HOST}")
+    private String mailHost;
+
+    @PostConstruct
+    public void init() {
+        System.out.println("MAIL_HOST = " + mailHost);
+    }
 
     public void send(String to, String subject, String content) {
 
