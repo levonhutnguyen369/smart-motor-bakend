@@ -41,11 +41,16 @@ public class AuthController {
 
         String otpCode = String.valueOf((int) (Math.random() * 9000) + 1000);
         user.setOtpCode(otpCode);
-        emailService.send(
-                user.getEmail(),
-                "Hệ thống smart motor",
-                "Bạn đã đăng kí tài khoản thành công. Mã OPT: " + user.getOtpCode()
-        );
+        try {
+            emailService.send(
+                    user.getEmail(),
+                    "Hệ thống smart motor",
+                    "Bạn đã đăng kí tài khoản thành công. Mã OTP: " + user.getOtpCode()
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(e.getMessage());
+        }
         user.setStatus(Status.PENDING);
 
         userRepository.save(user);

@@ -18,12 +18,21 @@ public class EmailService {
 
     public void send(String to, String subject, String content) {
 
-        SimpleMailMessage message = new SimpleMailMessage();
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
 
-        message.setTo(to);
-        message.setSubject(subject);
-        message.setText(content);
+            message.setTo(to);
+            message.setSubject(subject);
+            message.setText(content);
 
-        mailSender.send(message);
+            mailSender.send(message);
+
+            System.out.println("===== SEND MAIL SUCCESS =====");
+
+        } catch (Exception e) {
+            System.out.println("===== SEND MAIL ERROR =====");
+            e.printStackTrace();
+            throw e;
+        }
     }
 }
