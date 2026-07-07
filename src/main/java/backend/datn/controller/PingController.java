@@ -41,18 +41,9 @@ public class PingController {
 
 
 
-    @GetMapping("/test-env")
-    public String test1() {
-        return """
-            MAIL_HOST = %s
-            MAIL_PORT = %s
-            MAIL_USERNAME = %s
-            MAIL_PASSWORD = %s
-            """.formatted(
-                env.getProperty("MAIL_HOST"),
-                env.getProperty("MAIL_PORT"),
-                env.getProperty("MAIL_USERNAME"),
-                env.getProperty("MAIL_PASSWORD")
-        );
+    @GetMapping("/test-brevo")
+    public String testBrevo() {
+        String key = env.getProperty("BREVO_API_KEY");
+        return key == null ? "NULL" : key.substring(0, 10) + "...";
     }
 }
