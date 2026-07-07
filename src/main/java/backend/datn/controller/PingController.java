@@ -1,6 +1,8 @@
 package backend.datn.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +16,8 @@ public class PingController {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpMessagingTemplate messagingTemplate;
+    @Autowired
+    private Environment env;
     @GetMapping
     public String ping() {
         try {
@@ -33,5 +37,12 @@ public class PingController {
                 "Hello WebSocket");
 
         return "OK";
+    }
+
+
+
+    @GetMapping("/test-env")
+    public String test1() {
+        return "MAIL_HOST = " + env.getProperty("MAIL_HOST");
     }
 }
