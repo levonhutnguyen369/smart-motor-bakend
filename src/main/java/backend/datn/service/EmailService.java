@@ -16,14 +16,6 @@ import org.springframework.stereotype.Service;
 public class EmailService {
     private final JavaMailSender mailSender;
 
-    @Value("${MAIL_HOST}")
-    private String mailHost;
-
-    @PostConstruct
-    public void init() {
-        System.out.println("MAIL_HOST = " + mailHost);
-    }
-
     public void send(String to, String subject, String content) {
 
         SimpleMailMessage message = new SimpleMailMessage();
