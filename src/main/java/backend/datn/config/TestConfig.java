@@ -7,11 +7,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class TestConfig {
 
-    @Value("${MAIL_HOST}")
-    private String mailHost;
-
-    @PostConstruct
-    public void init() {
-        System.out.println("MAIL_HOST = " + mailHost);
-    }
+//    @Value("${MAIL_HOST}")
+//    private String mailHost;
+//
+//    @PostConstruct
+//    public void init() {
+//        System.out.println("MAIL_HOST = " + mailHost);
+//    }
 }
